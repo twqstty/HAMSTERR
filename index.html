@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tap Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="ui">
+        <div>Очки: <span id="score">0</span></div>
+        <div>Уровень: <span id="level">1</span></div>
+    </div>
+    <div id="menu-container">
+        <button id="shopBtn" class="menu-btn">Магазин</button>
+        <button id="acquisitionsBtn" class="menu-btn">Приобретения</button>
+    </div>
+    <div id="gameButton">
+        <img src="https://46tv.ru/uploads/posts/2024-07/1721374745_hamster-kombat.png" alt="Tap Button">
+    </div>
+    <button id="doublePoints" class="booster">Удвоение (50 очков)</button>
+    <button id="autoTap" class="booster">Авто-тап (100 очков)</button>
+
+    <div id="shopModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Магазин</h2>
+            <div id="shopItems" class="scrollable"></div>
+        </div>
+    </div>
+
+    <div id="acquisitionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Приобретения</h2>
+            <div id="acquiredItems"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
