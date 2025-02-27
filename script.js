@@ -63,11 +63,41 @@ const shopItems = [
 
 
 const themes = [
-    { id: 'default', name: 'Стандартный', price: 0, img: 'https://via.placeholder.com/150?text=Default', bg: '#f0f0f0' },
-    { id: 'forest', name: 'Лес', price: 5, img: 'https://img.freepik.com/free-vector/cartoon-forest-landscape-endless-nature-background-computer-games-nature-tree-outdoor-plant-green-natural-environment-wood_1284-41524.jpg', bg: 'url(https://images.prom.ua/3637899062_fon-dlya-predmetnoyi.jpg)' },
-    { id: 'space', name: 'Космос', price: 5000, img: 'https://via.placeholder.com/150?text=Space', bg: 'url(YOUR_SPACE_IMAGE_URL)' },
-    { id: 'ocean', name: 'Океан', price: 5000, img: 'https://via.placeholder.com/150?text=Ocean', bg: 'url(YOUR_OCEAN_IMAGE_URL)' },
-    { id: 'desert', name: 'Пустыня', price: 5000, img: 'https://via.placeholder.com/150?text=Desert', bg: 'url(YOUR_DESERT_IMAGE_URL)' }
+    { 
+        id: 'default', 
+        name: 'Стандартный', 
+        price: 0, 
+        img: 'https://steamuserimages-a.akamaihd.net/ugc/2047498313982249616/B2692BD036F1035574205930942363FC77B071EC/?imw=512&amp;imh=288&amp;ima=fit&amp;impolicy=Letterbox&amp;imcolor=%23000000&amp;letterbox=true', 
+        bg: '#f0f0f0' 
+    },
+    { 
+        id: 'forest', 
+        name: 'Лес', 
+        price: 5    , 
+        img: 'https://img.freepik.com/free-vector/cartoon-forest-landscape-endless-nature-background-computer-games-nature-tree-outdoor-plant-green-natural-environment-wood_1284-41524.jpg', 
+        bg: 'url(https://img.freepik.com/free-vector/cartoon-forest-landscape-endless-nature-background-computer-games-nature-tree-outdoor-plant-green-natural-environment-wood_1284-41524.jpg)' 
+    },
+    { 
+        id: 'space', 
+        name: 'Космос', 
+        price: 10, 
+        img: 'https://cdn.steamstatic.com/steamcommunity/public/images/items/504400/ac6891f4a16e9dfbdfef65dc5672b01cc1abf271.jpg', 
+        bg: 'url(https://cdn.steamstatic.com/steamcommunity/public/images/items/504400/ac6891f4a16e9dfbdfef65dc5672b01cc1abf271.jpg)' 
+    },
+    { 
+        id: 'ocean', 
+        name: 'Океан', 
+        price: 20, 
+        img: 'https://wallpapers.com/images/hd/dark-ocean-1920-x-1080-wallpaper-erhi5bstqli1l23f.jpg', 
+        bg: 'url(https://wallpapers.com/images/hd/dark-ocean-1920-x-1080-wallpaper-erhi5bstqli1l23f.jpg)' 
+    },
+    { 
+        id: 'desert', 
+        name: 'Пустыня', 
+        price: 30, 
+        img: 'https://i.pinimg.com/originals/0e/c0/65/0ec0653f9cb1323e15d8ecd4a96807b6.jpg', 
+        bg: 'url(https://i.pinimg.com/originals/0e/c0/65/0ec0653f9cb1323e15d8ecd4a96807b6.jpg)' 
+    }
 ];
 
 function updateUI() {
@@ -99,6 +129,9 @@ function applyTheme(themeId) {
     if (theme) {
         currentTheme = theme.id;
         document.body.style.background = theme.bg;
+        document.body.style.backgroundSize = 'cover'; // Фон растягивается на весь экран
+        document.body.style.backgroundRepeat = 'no-repeat'; // Без повторения изображения
+        document.body.style.backgroundPosition = 'center'; // Центрирование фона
     }
 }
 
@@ -169,11 +202,11 @@ function renderThemes() {
                 score -= theme.price;
                 acquiredThemes.push(theme.id);
                 applyTheme(theme.id); // Применяем фон сразу после покупки
-            } else if (acquiredThemes.includes(theme.id)) {
+            } else if (acquiredThemes.includes(theme.id) && theme.id !== currentTheme) {
                 applyTheme(theme.id); // Применяем фон при выборе
             }
             updateUI();
-            renderThemes();
+            renderThemes(); // Обновляем интерфейс после действия
         });
         themesContainer.appendChild(card);
     });
@@ -289,3 +322,4 @@ window.addEventListener('click', (event) => {
 gameButton.addEventListener('click', handleTap);
 updateUI();
 applyTheme(currentTheme); // Устанавливаем начальный фон
+ы

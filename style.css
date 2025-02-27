@@ -6,6 +6,9 @@ body {
     align-items: center;
     height: 100vh;
     background-color: #f0f0f0; /* Значение по умолчанию */
+    background-size: cover; /* Фон покрывает весь экран */
+    background-repeat: no-repeat; /* Без повторения */
+    background-position: center; /* Центрирование фона */
     font-family: Arial, sans-serif;
     transition: background 0.5s; /* Плавная смена фона */
 }
