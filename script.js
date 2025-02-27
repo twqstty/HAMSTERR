@@ -1,4 +1,5 @@
 const gameButton = document.getElementById('gameButton');
+const buttonImage = document.getElementById('buttonImage'); // Изображение кнопки
 const scoreDisplay = document.getElementById('score');
 const levelDisplay = document.getElementById('level');
 const doublePointsBtn = document.getElementById('doublePoints');
@@ -13,13 +14,16 @@ const shopBtn = document.getElementById('shopBtn');
 const acquisitionsBtn = document.getElementById('acquisitionsBtn');
 const boostersBtn = document.getElementById('boostersBtn');
 const themesBtn = document.getElementById('themesBtn');
+const buttonImagesBtn = document.getElementById('buttonImagesBtn'); // Новая кнопка
 const shopModal = document.getElementById('shopModal');
 const acquisitionsModal = document.getElementById('acquisitionsModal');
 const boostersModal = document.getElementById('boostersModal');
 const themesModal = document.getElementById('themesModal');
+const buttonImagesModal = document.getElementById('buttonImagesModal'); // Новое модальное окно
 const shopItemsContainer = document.getElementById('shopItems');
 const acquiredItemsContainer = document.getElementById('acquiredItems');
 const themesContainer = document.getElementById('themesContainer');
+const buttonImagesContainer = document.getElementById('buttonImagesContainer');
 
 const levelBarContainer = document.createElement('div');
 levelBarContainer.style.position = 'absolute';
@@ -44,8 +48,10 @@ let level = 1;
 let multiplier = 1;
 let autoTapActive = false;
 let acquiredItems = [];
-let acquiredThemes = ['default']; // "Стандартный" фон уже куплен по умолчанию
-let currentTheme = 'default'; // Текущий фон
+let acquiredThemes = ['default'];
+let currentTheme = 'default';
+let acquiredButtonImages = ['default']; // Купленные изображения кнопок
+let currentButtonImage = 'default'; // Текущее изображение кнопки
 
 const shopItems = [
     { id: 1, name: 'Алекс', price: 100, desc: 'АЙ ТИГР', img: 'https://steamuserimages-a.akamaihd.net/ugc/2048623604695933913/75EE024B6CC87758CCBEC3B341F98F4E004445B2/?imw=512&imh=512&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true' },
@@ -61,44 +67,53 @@ const shopItems = [
     { id: 11, name: 'Михаил Эйдус', price: 1000000, desc: 'МИХАИЛ МАТЬ ЕГО ЭЙДУС', img: 'https://i.ibb.co/3yGvsBtG/a685128f-bece-4692-8be6-3fd4d9bb38a8.jpg' }
 ];
 
-
 const themes = [
-    { 
-        id: 'default', 
-        name: 'Стандартный', 
-        price: 0, 
-        img: 'https://steamuserimages-a.akamaihd.net/ugc/2047498313982249616/B2692BD036F1035574205930942363FC77B071EC/?imw=512&amp;imh=288&amp;ima=fit&amp;impolicy=Letterbox&amp;imcolor=%23000000&amp;letterbox=true', 
-        bg: '#f0f0f0' 
-    },
-    { 
-        id: 'forest', 
-        name: 'Лес', 
-        price: 5    , 
-        img: 'https://img.freepik.com/free-vector/cartoon-forest-landscape-endless-nature-background-computer-games-nature-tree-outdoor-plant-green-natural-environment-wood_1284-41524.jpg', 
-        bg: 'url(https://img.freepik.com/free-vector/cartoon-forest-landscape-endless-nature-background-computer-games-nature-tree-outdoor-plant-green-natural-environment-wood_1284-41524.jpg)' 
-    },
-    { 
-        id: 'space', 
-        name: 'Космос', 
-        price: 10, 
-        img: 'https://cdn.steamstatic.com/steamcommunity/public/images/items/504400/ac6891f4a16e9dfbdfef65dc5672b01cc1abf271.jpg', 
-        bg: 'url(https://cdn.steamstatic.com/steamcommunity/public/images/items/504400/ac6891f4a16e9dfbdfef65dc5672b01cc1abf271.jpg)' 
-    },
-    { 
-        id: 'ocean', 
-        name: 'Океан', 
-        price: 20, 
-        img: 'https://wallpapers.com/images/hd/dark-ocean-1920-x-1080-wallpaper-erhi5bstqli1l23f.jpg', 
-        bg: 'url(https://wallpapers.com/images/hd/dark-ocean-1920-x-1080-wallpaper-erhi5bstqli1l23f.jpg)' 
-    },
-    { 
-        id: 'desert', 
-        name: 'Пустыня', 
-        price: 30, 
-        img: 'https://i.pinimg.com/originals/0e/c0/65/0ec0653f9cb1323e15d8ecd4a96807b6.jpg', 
-        bg: 'url(https://i.pinimg.com/originals/0e/c0/65/0ec0653f9cb1323e15d8ecd4a96807b6.jpg)' 
-    }
+    { id: 'default', name: 'Стандартный', price: 0, img: 'https://steamuserimages-a.akamaihd.net/ugc/2047498313982249616/B2692BD036F1035574205930942363FC77B071EC/?imw=512&imh=288&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true', bg: '#f0f0f0' },
+    { id: 'forest', name: 'Лес', price: 5, img: 'https://img.freepik.com/free-vector/cartoon-forest-landscape-endless-nature-background-computer-games-nature-tree-outdoor-plant-green-natural-environment-wood_1284-41524.jpg', bg: 'url(https://img.freepik.com/free-vector/cartoon-forest-landscape-endless-nature-background-computer-games-nature-tree-outdoor-plant-green-natural-environment-wood_1284-41524.jpg)' },
+    { id: 'space', name: 'Космос', price: 10, img: 'https://cdn.steamstatic.com/steamcommunity/public/images/items/504400/ac6891f4a16e9dfbdfef65dc5672b01cc1abf271.jpg', bg: 'url(https://cdn.steamstatic.com/steamcommunity/public/images/items/504400/ac6891f4a16e9dfbdfef65dc5672b01cc1abf271.jpg)' },
+    { id: 'ocean', name: 'Океан', price: 20, img: 'https://wallpapers.com/images/hd/dark-ocean-1920-x-1080-wallpaper-erhi5bstqli1l23f.jpg', bg: 'url(https://wallpapers.com/images/hd/dark-ocean-1920-x-1080-wallpaper-erhi5bstqli1l23f.jpg)' },
+    { id: 'desert', name: 'Пустыня', price: 30, img: 'https://i.pinimg.com/originals/0e/c0/65/0ec0653f9cb1323e15d8ecd4a96807b6.jpg', bg: 'url(https://i.pinimg.com/originals/0e/c0/65/0ec0653f9cb1323e15d8ecd4a96807b6.jpg)' }
 ];
+
+const buttonImages = [
+    { id: 'default', name: 'Хомяк', price: 0, img: 'https://46tv.ru/uploads/posts/2024-07/1721374745_hamster-kombat.png' },
+    { id: 'cat', name: 'Спанч-Боб', price: 1000, img: 'https://i.pinimg.com/736x/cd/e2/33/cde2338d374f3f1fd1cfc21242d39fd4.jpg' },
+    { id: 'dog', name: '9mice', price: 1000, img: 'https://i.pinimg.com/736x/8f/d4/44/8fd444028b0c544214f594c14b03751a.jpg' },
+    { id: 'bird', name: 'Kai Angel', price: 1000, img: 'https://i.pinimg.com/736x/5b/28/47/5b28472756d6cd031e6a1c668b10bec3.jpg' },
+    { id: 'walter', name: 'Heisenberg', price: 1000, img: 'https://playprint.ru/images/catalog/categories/category-series-preview.jpg' },
+    { id: 'pinkman', name: 'Jesse Pinkman', price: 1000, img: 'https://www.kino-teatr.ru/news/4804/52524.jpg' },
+];
+
+function saveGameState() {
+    const gameState = {
+        score: score,
+        level: level,
+        multiplier: multiplier,
+        autoTapActive: autoTapActive,
+        acquiredItems: acquiredItems,
+        acquiredThemes: acquiredThemes,
+        currentTheme: currentTheme,
+        acquiredButtonImages: acquiredButtonImages, // Сохраняем купленные изображения
+        currentButtonImage: currentButtonImage // Сохраняем текущее изображение
+    };
+    localStorage.setItem('gameState', JSON.stringify(gameState));
+}
+
+function loadGameState() {
+    const savedState = localStorage.getItem('gameState');
+    if (savedState) {
+        const gameState = JSON.parse(savedState);
+        score = gameState.score || 0;
+        level = gameState.level || 1;
+        multiplier = gameState.multiplier || 1;
+        autoTapActive = gameState.autoTapActive || false;
+        acquiredItems = gameState.acquiredItems || [];
+        acquiredThemes = gameState.acquiredThemes || ['default'];
+        currentTheme = gameState.currentTheme || 'default';
+        acquiredButtonImages = gameState.acquiredButtonImages || ['default']; // Загружаем изображения
+        currentButtonImage = gameState.currentButtonImage || 'default'; // Загружаем текущее изображение
+    }
+}
 
 function updateUI() {
     scoreDisplay.textContent = score;
@@ -122,6 +137,8 @@ function updateUI() {
 
     let progress = (score % 100) / 100 * 100;
     levelBar.style.width = `${progress}%`;
+
+    saveGameState();
 }
 
 function applyTheme(themeId) {
@@ -129,9 +146,18 @@ function applyTheme(themeId) {
     if (theme) {
         currentTheme = theme.id;
         document.body.style.background = theme.bg;
-        document.body.style.backgroundSize = 'cover'; // Фон растягивается на весь экран
-        document.body.style.backgroundRepeat = 'no-repeat'; // Без повторения изображения
-        document.body.style.backgroundPosition = 'center'; // Центрирование фона
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        document.body.style.backgroundPosition = 'center';
+    }
+}
+
+// Новая функция для применения изображения кнопки
+function applyButtonImage(imageId) {
+    const image = buttonImages.find(b => b.id === imageId);
+    if (image) {
+        currentButtonImage = image.id;
+        buttonImage.src = image.img; // Меняем изображение кнопки
     }
 }
 
@@ -201,14 +227,44 @@ function renderThemes() {
             if (!acquiredThemes.includes(theme.id) && score >= theme.price) {
                 score -= theme.price;
                 acquiredThemes.push(theme.id);
-                applyTheme(theme.id); // Применяем фон сразу после покупки
+                applyTheme(theme.id);
             } else if (acquiredThemes.includes(theme.id) && theme.id !== currentTheme) {
-                applyTheme(theme.id); // Применяем фон при выборе
+                applyTheme(theme.id);
             }
             updateUI();
-            renderThemes(); // Обновляем интерфейс после действия
+            renderThemes();
         });
         themesContainer.appendChild(card);
+    });
+}
+
+// Новая функция для рендера изображений кнопки
+function renderButtonImages() {
+    buttonImagesContainer.innerHTML = '';
+    buttonImages.forEach(image => {
+        const card = document.createElement('div');
+        card.classList.add('theme-card'); // Используем тот же стиль, что и для тем
+        card.innerHTML = `
+            <img src="${image.img}" alt="${image.name}">
+            <h3>${image.name}</h3>
+            <p>Цена: ${image.price.toLocaleString()} очков</p>
+            <button ${score < image.price && !acquiredButtonImages.includes(image.id) ? 'disabled' : ''}>
+                ${image.id === currentButtonImage ? 'Выбрано' : acquiredButtonImages.includes(image.id) ? 'Выбрать' : 'Купить'}
+            </button>
+        `;
+        const actionBtn = card.querySelector('button');
+        actionBtn.addEventListener('click', () => {
+            if (!acquiredButtonImages.includes(image.id) && score >= image.price) {
+                score -= image.price;
+                acquiredButtonImages.push(image.id);
+                applyButtonImage(image.id);
+            } else if (acquiredButtonImages.includes(image.id) && image.id !== currentButtonImage) {
+                applyButtonImage(image.id);
+            }
+            updateUI();
+            renderButtonImages();
+        });
+        buttonImagesContainer.appendChild(card);
     });
 }
 
@@ -302,6 +358,11 @@ themesBtn.addEventListener('click', () => {
     renderThemes();
 });
 
+buttonImagesBtn.addEventListener('click', () => {
+    buttonImagesModal.style.display = 'block';
+    renderButtonImages();
+});
+
 // Закрытие модальных окон
 document.querySelectorAll('.close').forEach(closeBtn => {
     closeBtn.addEventListener('click', () => {
@@ -309,6 +370,7 @@ document.querySelectorAll('.close').forEach(closeBtn => {
         acquisitionsModal.style.display = 'none';
         boostersModal.style.display = 'none';
         themesModal.style.display = 'none';
+        buttonImagesModal.style.display = 'none';
     });
 });
 
@@ -317,9 +379,21 @@ window.addEventListener('click', (event) => {
     if (event.target === acquisitionsModal) acquisitionsModal.style.display = 'none';
     if (event.target === boostersModal) boostersModal.style.display = 'none';
     if (event.target === themesModal) themesModal.style.display = 'none';
+    if (event.target === buttonImagesModal) buttonImagesModal.style.display = 'none';
 });
 
 gameButton.addEventListener('click', handleTap);
+
+// Инициализация
+loadGameState();
 updateUI();
-applyTheme(currentTheme); // Устанавливаем начальный фон
-ы
+applyTheme(currentTheme);
+applyButtonImage(currentButtonImage); // Применяем текущее изображение кнопки
+
+if (autoTapActive) {
+    setInterval(() => {
+        score += 1 * multiplier;
+        if (score >= level * 100) level++;
+        updateUI();
+    }, 1000);
+}

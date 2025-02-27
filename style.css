@@ -4,28 +4,30 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background-color: #f0f0f0; /* Значение по умолчанию */
-    background-size: cover; /* Фон покрывает весь экран */
-    background-repeat: no-repeat; /* Без повторения */
-    background-position: center; /* Центрирование фона */
+    min-height: 100vh; /* Используем min-height вместо height */
+    background-color: #f0f0f0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     font-family: Arial, sans-serif;
-    transition: background 0.5s; /* Плавная смена фона */
+    transition: background 0.5s;
 }
 
 #gameButton {
     border: 2px solid #333;
-    background-color: #fff;
     width: 400px;
     height: 400px;
     border-radius: 50%;
     overflow: hidden;
     cursor: pointer;
     position: relative;
+    background-color: transparent; /* Убрали белый фон */
 }
+
 #gameButton:active {
     transform: scale(1.02);
 }
+
 #gameButton img {
     width: 100%;
     height: 100%;
@@ -37,6 +39,26 @@ body {
     color: #333;
     text-align: center;
     font-size: 24px;
+}
+
+/* Стили для полосы прогресса */
+#levelBarContainer {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 20px;
+    background: #ddd;
+    border-radius: 10px;
+    z-index: 1; /* Устанавливаем ниже меню */
+}
+
+#levelBar {
+    height: 100%;
+    width: 0%;
+    background: #4CAF50;
+    border-radius: 10px;
 }
 
 .booster {
@@ -57,10 +79,11 @@ body {
 
 #menu-container {
     position: absolute;
-    top: 35px;
+    top: 35px; /* Как было изначально */
     right: 10px;
     display: flex;
     gap: 10px;
+    z-index: 2; /* Устанавливаем выше прогресс-бара */
 }
 
 .menu-btn {
@@ -76,11 +99,10 @@ body {
     background-color: #3d2d6a;
 }
 
-/* Modal Styles */
 .modal {
     display: none;
     position: fixed;
-    z-index: 1;
+    z-index: 10; /* Выше всех элементов */
     left: 0;
     top: 0;
     width: 100%;
@@ -113,14 +135,14 @@ body {
     text-decoration: none;
 }
 
-#shopItems, #acquiredItems, #boostersContainer, #themesContainer {
+#shopItems, #acquiredItems, #boostersContainer, #themesContainer, #buttonImagesContainer {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
 }
 
-#acquiredItems, #boostersContainer, #themesContainer {
+#acquiredItems, #boostersContainer, #themesContainer, #buttonImagesContainer {
     overflow-y: auto;
     max-height: 400px;
 }
@@ -161,27 +183,106 @@ body {
     cursor: not-allowed;
 }
 
+/* Адаптивность для экранов до 450px */
 @media (max-width: 450px) {
+    body {
+        min-height: 100vh;
+        padding: 10px;
+    }
+
     #gameButton {
-        height: 350px;
-        width: 350px;
-        margin: 20px;
+        width: 250px;
+        height: 250px;
+        margin: 10px auto;
     }
-    #shopItems, #themesContainer {
-        justify-content: center;
+
+    #ui {
+        font-size: 18px;
+        margin-bottom: 10px;
     }
+
+    #menu-container {
+        position: static;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        margin-top: 10px;
+    }
+
+    .menu-btn {
+        width: 100%;
+        max-width: 200px;
+        padding: 10px;
+    }
+
+    #levelBarContainer {
+        width: 90%; /* Уменьшаем ширину для узких экранов */
+        top: 5px;
+    }
+
+    .modal-content {
+        width: 90%;
+        margin: 5% auto;
+        padding: 15px;
+    }
+
     .item-card, .theme-card {
-        width: 200px;
+        width: 120px;
     }
-    #acquiredItems {
-        justify-content: center;
+
+    .item-card img, .theme-card img {
+        height: 80px;
+    }
+
+    .booster {
+        width: 100%;
+        max-width: 180px;
+    }
+
+    .scrollable {
+        max-height: 300px;
     }
 }
 
+/* Адаптивность для экранов до 350px */
 @media (max-width: 350px) {
     #gameButton {
-        height: 300px;
-        width: 300px;
+        width: 200px;
+        height: 200px;
+    }
+
+    #ui {
+        font-size: 16px;
+    }
+
+    .menu-btn {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    #levelBarContainer {
+        width: 85%;
+        height: 15px; /* Уменьшаем высоту для маленьких экранов */
+    }
+
+    .modal-content {
+        padding: 10px;
+    }
+
+    .item-card, .theme-card {
+        width: 100px;
+    }
+
+    .item-card img, .theme-card img {
+        height: 60px;
+    }
+
+    .booster {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .scrollable {
+        max-height: 250px;
     }
 }
-

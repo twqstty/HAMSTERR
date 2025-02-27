@@ -15,10 +15,11 @@
         <button id="shopBtn" class="menu-btn">Магазин</button>
         <button id="acquisitionsBtn" class="menu-btn">Приобретения</button>
         <button id="boostersBtn" class="menu-btn">Усиления</button>
-        <button id="themesBtn" class="menu-btn">Оформление</button> <!-- Новая кнопка -->
+        <button id="themesBtn" class="menu-btn">Оформление</button>
+        <button id="buttonImagesBtn" class="menu-btn">Изображения кнопки</button> <!-- Новая кнопка -->
     </div>
     <div id="gameButton">
-        <img src="https://46tv.ru/uploads/posts/2024-07/1721374745_hamster-kombat.png" alt="Tap Button">
+        <img src="https://46tv.ru/uploads/posts/2024-07/1721374745_hamster-kombat.png" alt="Tap Button" id="buttonImage">
     </div>
 
     <!-- Модальное окно для магазина -->
@@ -57,12 +58,21 @@
         </div>
     </div>
 
-    <!-- Новое модальное окно для оформления -->
+    <!-- Модальное окно для оформления -->
     <div id="themesModal" class="modal">
         <div class="modal-content">
             <span class="close">×</span>
             <h2>Оформление</h2>
             <div id="themesContainer" class="scrollable"></div>
+        </div>
+    </div>
+
+    <!-- Новое модальное окно для изображений кнопки -->
+    <div id="buttonImagesModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Изображения кнопки</h2>
+            <div id="buttonImagesContainer" class="scrollable"></div>
         </div>
     </div>
 
