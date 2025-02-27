@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <!-- Обновленный viewport -->
     <title>Tap Game</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -10,13 +10,16 @@
     <div id="ui">
         <div>Очки: <span id="score">0</span></div>
         <div>Уровень: <span id="level">1</span></div>
+        <div>Кликов: <span id="clicks">0</span></div>
     </div>
     <div id="menu-container">
         <button id="shopBtn" class="menu-btn">Магазин</button>
         <button id="acquisitionsBtn" class="menu-btn">Приобретения</button>
         <button id="boostersBtn" class="menu-btn">Усиления</button>
         <button id="themesBtn" class="menu-btn">Оформление</button>
-        <button id="buttonImagesBtn" class="menu-btn">Изображения кнопки</button> <!-- Новая кнопка -->
+        <button id="buttonImagesBtn" class="menu-btn">Изображения кнопки</button>
+        <button id="achievementsBtn" class="menu-btn">Достижения</button>
+        <button id="statsBtn" class="menu-btn">Статистика</button>
     </div>
     <div id="gameButton">
         <img src="https://46tv.ru/uploads/posts/2024-07/1721374745_hamster-kombat.png" alt="Tap Button" id="buttonImage">
@@ -67,12 +70,30 @@
         </div>
     </div>
 
-    <!-- Новое модальное окно для изображений кнопки -->
+    <!-- Модальное окно для изображений кнопки -->
     <div id="buttonImagesModal" class="modal">
         <div class="modal-content">
             <span class="close">×</span>
             <h2>Изображения кнопки</h2>
             <div id="buttonImagesContainer" class="scrollable"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для достижений -->
+    <div id="achievementsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Достижения</h2>
+            <div id="achievementsContainer" class="scrollable"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для статистики -->
+    <div id="statsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Статистика</h2>
+            <div id="statsContainer" class="scrollable"></div>
         </div>
     </div>
 

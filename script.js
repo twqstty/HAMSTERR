@@ -1,7 +1,8 @@
 const gameButton = document.getElementById('gameButton');
-const buttonImage = document.getElementById('buttonImage'); // Изображение кнопки
+const buttonImage = document.getElementById('buttonImage');
 const scoreDisplay = document.getElementById('score');
 const levelDisplay = document.getElementById('level');
+const clicksDisplay = document.getElementById('clicks');
 const doublePointsBtn = document.getElementById('doublePoints');
 const superDoubleBtn = document.getElementById('superDouble');
 const megaDoubleBtn = document.getElementById('megaDouble');
@@ -14,18 +15,25 @@ const shopBtn = document.getElementById('shopBtn');
 const acquisitionsBtn = document.getElementById('acquisitionsBtn');
 const boostersBtn = document.getElementById('boostersBtn');
 const themesBtn = document.getElementById('themesBtn');
-const buttonImagesBtn = document.getElementById('buttonImagesBtn'); // Новая кнопка
+const buttonImagesBtn = document.getElementById('buttonImagesBtn');
+const achievementsBtn = document.getElementById('achievementsBtn');
+const statsBtn = document.getElementById('statsBtn');
 const shopModal = document.getElementById('shopModal');
 const acquisitionsModal = document.getElementById('acquisitionsModal');
 const boostersModal = document.getElementById('boostersModal');
 const themesModal = document.getElementById('themesModal');
-const buttonImagesModal = document.getElementById('buttonImagesModal'); // Новое модальное окно
+const buttonImagesModal = document.getElementById('buttonImagesModal');
+const achievementsModal = document.getElementById('achievementsModal');
+const statsModal = document.getElementById('statsModal');
 const shopItemsContainer = document.getElementById('shopItems');
 const acquiredItemsContainer = document.getElementById('acquiredItems');
 const themesContainer = document.getElementById('themesContainer');
 const buttonImagesContainer = document.getElementById('buttonImagesContainer');
+const achievementsContainer = document.getElementById('achievementsContainer');
+const statsContainer = document.getElementById('statsContainer');
 
 const levelBarContainer = document.createElement('div');
+levelBarContainer.id = 'levelBarContainer';
 levelBarContainer.style.position = 'absolute';
 levelBarContainer.style.top = '10px';
 levelBarContainer.style.left = '50%';
@@ -37,6 +45,7 @@ levelBarContainer.style.borderRadius = '10px';
 document.body.appendChild(levelBarContainer);
 
 const levelBar = document.createElement('div');
+levelBar.id = 'levelBar';
 levelBar.style.height = '100%';
 levelBar.style.width = '0%';
 levelBar.style.background = '#4CAF50';
@@ -50,8 +59,17 @@ let autoTapActive = false;
 let acquiredItems = [];
 let acquiredThemes = ['default'];
 let currentTheme = 'default';
-let acquiredButtonImages = ['default']; // Купленные изображения кнопок
-let currentButtonImage = 'default'; // Текущее изображение кнопки
+let acquiredButtonImages = ['default'];
+let currentButtonImage = 'default';
+let clicks = 0;
+let achieved = [];
+
+const achievements = [
+    { id: 'clicks100', name: '100 кликов', condition: () => clicks >= 100, reward: 50 },
+    { id: 'level5', name: '5 уровней', condition: () => level >= 5, reward: 100 },
+    { id: 'score1000', name: '1000 очков', condition: () => score >= 1000, reward: 200 },
+    { id: 'buy3items', name: '3 покупки', condition: () => acquiredItems.length >= 3, reward: 150 }
+];
 
 const shopItems = [
     { id: 1, name: 'Алекс', price: 100, desc: 'АЙ ТИГР', img: 'https://steamuserimages-a.akamaihd.net/ugc/2048623604695933913/75EE024B6CC87758CCBEC3B341F98F4E004445B2/?imw=512&imh=512&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true' },
@@ -68,11 +86,11 @@ const shopItems = [
 ];
 
 const themes = [
-    { id: 'default', name: 'Стандартный', price: 0, img: 'https://steamuserimages-a.akamaihd.net/ugc/2047498313982249616/B2692BD036F1035574205930942363FC77B071EC/?imw=512&imh=288&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true', bg: '#f0f0f0' },
-    { id: 'forest', name: 'Лес', price: 5, img: 'https://img.freepik.com/free-vector/cartoon-forest-landscape-endless-nature-background-computer-games-nature-tree-outdoor-plant-green-natural-environment-wood_1284-41524.jpg', bg: 'url(https://img.freepik.com/free-vector/cartoon-forest-landscape-endless-nature-background-computer-games-nature-tree-outdoor-plant-green-natural-environment-wood_1284-41524.jpg)' },
-    { id: 'space', name: 'Космос', price: 10, img: 'https://cdn.steamstatic.com/steamcommunity/public/images/items/504400/ac6891f4a16e9dfbdfef65dc5672b01cc1abf271.jpg', bg: 'url(https://cdn.steamstatic.com/steamcommunity/public/images/items/504400/ac6891f4a16e9dfbdfef65dc5672b01cc1abf271.jpg)' },
-    { id: 'ocean', name: 'Океан', price: 20, img: 'https://wallpapers.com/images/hd/dark-ocean-1920-x-1080-wallpaper-erhi5bstqli1l23f.jpg', bg: 'url(https://wallpapers.com/images/hd/dark-ocean-1920-x-1080-wallpaper-erhi5bstqli1l23f.jpg)' },
-    { id: 'desert', name: 'Пустыня', price: 30, img: 'https://i.pinimg.com/originals/0e/c0/65/0ec0653f9cb1323e15d8ecd4a96807b6.jpg', bg: 'url(https://i.pinimg.com/originals/0e/c0/65/0ec0653f9cb1323e15d8ecd4a96807b6.jpg)' }
+    { id: 'default', name: 'Стандартный', price: 0, img: 'https://steamuserimages-a.akamaihd.net/ugc/2047498313982249616/B2692BD036F1035574205930942363FC77B071EC/?imw=512&imh=288&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true', bg: '#f0f0f0', textColor: '#333' },
+    { id: 'forest', name: 'Лес', price: 5, img: 'https://img.freepik.com/free-vector/cartoon-forest-landscape-endless-nature-background-computer-games-nature-tree-outdoor-plant-green-natural-environment-wood_1284-41524.jpg', bg: 'url(https://img.freepik.com/free-vector/cartoon-forest-landscape-endless-nature-background-computer-games-nature-tree-outdoor-plant-green-natural-environment-wood_1284-41524.jpg)', textColor: '#fff' },
+    { id: 'space', name: 'Космос', price: 10, img: 'https://cdn.steamstatic.com/steamcommunity/public/images/items/504400/ac6891f4a16e9dfbdfef65dc5672b01cc1abf271.jpg', bg: 'url(https://cdn.steamstatic.com/steamcommunity/public/images/items/504400/ac6891f4a16e9dfbdfef65dc5672b01cc1abf271.jpg)', textColor: '#fff' },
+    { id: 'ocean', name: 'Океан', price: 20, img: 'https://wallpapers.com/images/hd/dark-ocean-1920-x-1080-wallpaper-erhi5bstqli1l23f.jpg', bg: 'url(https://wallpapers.com/images/hd/dark-ocean-1920-x-1080-wallpaper-erhi5bstqli1l23f.jpg)', textColor: '#fff' },
+    { id: 'desert', name: 'Пустыня', price: 30, img: 'https://i.pinimg.com/originals/0e/c0/65/0ec0653f9cb1323e15d8ecd4a96807b6.jpg', bg: 'url(https://i.pinimg.com/originals/0e/c0/65/0ec0653f9cb1323e15d8ecd4a96807b6.jpg)', textColor: '#000' }
 ];
 
 const buttonImages = [
@@ -93,8 +111,10 @@ function saveGameState() {
         acquiredItems: acquiredItems,
         acquiredThemes: acquiredThemes,
         currentTheme: currentTheme,
-        acquiredButtonImages: acquiredButtonImages, // Сохраняем купленные изображения
-        currentButtonImage: currentButtonImage // Сохраняем текущее изображение
+        acquiredButtonImages: acquiredButtonImages,
+        currentButtonImage: currentButtonImage,
+        clicks: clicks,
+        achieved: achieved
     };
     localStorage.setItem('gameState', JSON.stringify(gameState));
 }
@@ -110,14 +130,62 @@ function loadGameState() {
         acquiredItems = gameState.acquiredItems || [];
         acquiredThemes = gameState.acquiredThemes || ['default'];
         currentTheme = gameState.currentTheme || 'default';
-        acquiredButtonImages = gameState.acquiredButtonImages || ['default']; // Загружаем изображения
-        currentButtonImage = gameState.currentButtonImage || 'default'; // Загружаем текущее изображение
+        acquiredButtonImages = gameState.acquiredButtonImages || ['default'];
+        currentButtonImage = gameState.currentButtonImage || 'default';
+        clicks = gameState.clicks || 0;
+        achieved = gameState.achieved || [];
     }
+}
+
+function checkAchievements() {
+    achievements.forEach(achievement => {
+        if (!achieved.includes(achievement.id) && achievement.condition()) {
+            achieved.push(achievement.id);
+            score += achievement.reward;
+            alert(`Достижение: ${achievement.name}! Бонус: +${achievement.reward} очков`);
+            saveGameState();
+            updateUI();
+        }
+    });
+}
+
+function renderAchievements() {
+    achievementsContainer.innerHTML = '';
+    achievements.forEach(achievement => {
+        const div = document.createElement('div');
+        div.classList.add('item-card');
+        div.innerHTML = `
+            <h3>${achievement.name}</h3>
+            <p>Награда: ${achievement.reward} очков</p>
+            <p>Статус: ${achieved.includes(achievement.id) ? 'Выполнено' : 'В процессе'}</p>
+        `;
+        achievementsContainer.appendChild(div);
+    });
+}
+
+function renderStats() {
+    statsContainer.innerHTML = '';
+    const stats = [
+        `Всего кликов: ${clicks}`,
+        `Текущий уровень: ${level}`,
+        `Всего очков: ${score}`,
+        `Куплено предметов: ${acquiredItems.length}`,
+        `Куплено тем: ${acquiredThemes.length - 1}`,
+        `Куплено изображений кнопки: ${acquiredButtonImages.length - 1}`,
+        `Выполнено достижений: ${achieved.length}`
+    ];
+    stats.forEach(stat => {
+        const div = document.createElement('div');
+        div.classList.add('item-card');
+        div.innerHTML = `<p>${stat}</p>`;
+        statsContainer.appendChild(div);
+    });
 }
 
 function updateUI() {
     scoreDisplay.textContent = score;
     levelDisplay.textContent = level;
+    clicksDisplay.textContent = clicks;
     doublePointsBtn.disabled = score < 50 || multiplier >= 2;
     superDoubleBtn.disabled = score < 150 || multiplier >= 4;
     megaDoubleBtn.disabled = score < 300 || multiplier >= 8;
@@ -139,6 +207,7 @@ function updateUI() {
     levelBar.style.width = `${progress}%`;
 
     saveGameState();
+    checkAchievements();
 }
 
 function applyTheme(themeId) {
@@ -149,19 +218,21 @@ function applyTheme(themeId) {
         document.body.style.backgroundSize = 'cover';
         document.body.style.backgroundRepeat = 'no-repeat';
         document.body.style.backgroundPosition = 'center';
+        // Меняем цвет только для #ui (очки, уровень, клики)
+        document.getElementById('ui').style.color = theme.textColor;
     }
 }
 
-// Новая функция для применения изображения кнопки
 function applyButtonImage(imageId) {
     const image = buttonImages.find(b => b.id === imageId);
     if (image) {
         currentButtonImage = image.id;
-        buttonImage.src = image.img; // Меняем изображение кнопки
+        buttonImage.src = image.img;
     }
 }
 
 function handleTap() {
+    clicks++;
     score += 1 * multiplier;
     if (score >= level * 100) level++;
     updateUI();
@@ -238,12 +309,11 @@ function renderThemes() {
     });
 }
 
-// Новая функция для рендера изображений кнопки
 function renderButtonImages() {
     buttonImagesContainer.innerHTML = '';
     buttonImages.forEach(image => {
         const card = document.createElement('div');
-        card.classList.add('theme-card'); // Используем тот же стиль, что и для тем
+        card.classList.add('theme-card');
         card.innerHTML = `
             <img src="${image.img}" alt="${image.name}">
             <h3>${image.name}</h3>
@@ -363,6 +433,16 @@ buttonImagesBtn.addEventListener('click', () => {
     renderButtonImages();
 });
 
+achievementsBtn.addEventListener('click', () => {
+    achievementsModal.style.display = 'block';
+    renderAchievements();
+});
+
+statsBtn.addEventListener('click', () => {
+    statsModal.style.display = 'block';
+    renderStats();
+});
+
 // Закрытие модальных окон
 document.querySelectorAll('.close').forEach(closeBtn => {
     closeBtn.addEventListener('click', () => {
@@ -371,6 +451,8 @@ document.querySelectorAll('.close').forEach(closeBtn => {
         boostersModal.style.display = 'none';
         themesModal.style.display = 'none';
         buttonImagesModal.style.display = 'none';
+        achievementsModal.style.display = 'none';
+        statsModal.style.display = 'none';
     });
 });
 
@@ -380,6 +462,8 @@ window.addEventListener('click', (event) => {
     if (event.target === boostersModal) boostersModal.style.display = 'none';
     if (event.target === themesModal) themesModal.style.display = 'none';
     if (event.target === buttonImagesModal) buttonImagesModal.style.display = 'none';
+    if (event.target === achievementsModal) achievementsModal.style.display = 'none';
+    if (event.target === statsModal) statsModal.style.display = 'none';
 });
 
 gameButton.addEventListener('click', handleTap);
@@ -388,7 +472,7 @@ gameButton.addEventListener('click', handleTap);
 loadGameState();
 updateUI();
 applyTheme(currentTheme);
-applyButtonImage(currentButtonImage); // Применяем текущее изображение кнопки
+applyButtonImage(currentButtonImage);
 
 if (autoTapActive) {
     setInterval(() => {
