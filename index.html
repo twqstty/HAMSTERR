@@ -14,13 +14,14 @@
     <div id="menu-container">
         <button id="shopBtn" class="menu-btn">Магазин</button>
         <button id="acquisitionsBtn" class="menu-btn">Приобретения</button>
+        <button id="boostersBtn" class="menu-btn">Усиления</button>
+        <button id="themesBtn" class="menu-btn">Оформление</button> <!-- Новая кнопка -->
     </div>
     <div id="gameButton">
         <img src="https://46tv.ru/uploads/posts/2024-07/1721374745_hamster-kombat.png" alt="Tap Button">
     </div>
-    <button id="doublePoints" class="booster">Удвоение (50 очков)</button>
-    <button id="autoTap" class="booster">Авто-тап (100 очков)</button>
 
+    <!-- Модальное окно для магазина -->
     <div id="shopModal" class="modal">
         <div class="modal-content">
             <span class="close">×</span>
@@ -29,11 +30,39 @@
         </div>
     </div>
 
+    <!-- Модальное окно для приобретений -->
     <div id="acquisitionsModal" class="modal">
         <div class="modal-content">
             <span class="close">×</span>
             <h2>Приобретения</h2>
             <div id="acquiredItems"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для усилений -->
+    <div id="boostersModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Усиления</h2>
+            <div id="boostersContainer" class="scrollable">
+                <button id="doublePoints" class="booster">Удвоение (50 очков)</button>
+                <button id="superDouble" class="booster">Супер-удвоение (150 очков)</button>
+                <button id="megaDouble" class="booster">Мега-удвоение (300 очков)</button>
+                <button id="autoTap" class="booster">Авто-тап (100 очков)</button>
+                <button id="superMegaBoost" class="booster">Супер-Мегаусиление (1000 очков)</button>
+                <button id="hyperBoost" class="booster">Гипер усиление (5000 очков)</button>
+                <button id="ultraBoost" class="booster">Ультра усиление (10000 очков)</button>
+                <button id="ultra2Boost" class="booster">Ультра2 усиление (20000 очков)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Новое модальное окно для оформления -->
+    <div id="themesModal" class="modal">
+        <div class="modal-content">
+            <span class="close">×</span>
+            <h2>Оформление</h2>
+            <div id="themesContainer" class="scrollable"></div>
         </div>
     </div>
 
