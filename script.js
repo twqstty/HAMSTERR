@@ -1,37 +1,3 @@
-let resetFlag = false; // Глобальный флаг сброса
-
-function saveGameState() {
-    const gameState = {
-        score: resetFlag ? 0 : score, // Сбрасываем, если флаг активен
-        level: resetFlag ? 1 : level,
-        multiplier, autoTapActive, acquiredItems,
-        acquiredThemes, currentTheme, acquiredButtonImages, currentButtonImage,
-        clicks: resetFlag ? 0 : clicks,
-        achieved: resetFlag ? [] : achieved,
-        playerName
-    };
-    localStorage.setItem('gameState', JSON.stringify(gameState));
-    sendScoreToBot();
-}
-
-function sendScoreToBot() {
-    const data = { playerName, score, clicks, level, reset: resetFlag };
-    window.Telegram.WebApp.sendData(JSON.stringify(data));
-}
-
-// Добавим обработку ответа от бота
-window.Telegram.WebApp.onEvent('web_app_data', (event) => {
-    if (event.data && event.data.reset) {
-        resetFlag = true; // Получаем сигнал сброса
-        localStorage.clear(); // Очищаем localStorage
-        score = 0;
-        clicks = 0;
-        level = 1;
-        achieved = [];
-        updateUI();
-        alert('Статистика сброшена админом!');
-    }
-});
 const gameButton = document.getElementById('gameButton');
 const buttonImage = document.getElementById('buttonImage');
 const scoreDisplay = document.getElementById('score');
@@ -98,19 +64,19 @@ let currentButtonImage = 'default';
 let clicks = 0;
 let achieved = [];
 let playerName = '';
+let resetFlag = false; // Флаг для сброса
 
 // Telegram Web App интеграция
 window.Telegram.WebApp.ready();
 const user = window.Telegram.WebApp.initDataUnsafe.user;
-const adminId = '857785777'; // Замени на свой Telegram ID (узнай через @userinfobot)
+const adminId = '857785777';
 
-// Запрос ника
 if (user && user.username) {
-    playerName = user.username; // Берём ник из Telegram
+    playerName = user.username;
 } else if (user) {
-    playerName = user.first_name; // Или имя, если нет ника
+    playerName = user.first_name;
 } else {
-    playerName = prompt('Введи свой ник, братан:') || 'Аноним'; // Ручной ввод, если не в Telegram
+    playerName = prompt('Введи свой ник, братан:') || 'Аноним';
 }
 
 const achievements = [
@@ -118,7 +84,7 @@ const achievements = [
     { id: 'level5', name: '5 уровней', condition: () => level >= 5, reward: 100 },
     { id: 'score1000', name: '1000 очков', condition: () => score >= 1000, reward: 200 },
     { id: 'buy3items', name: '3 покупки', condition: () => acquiredItems.length >= 3, reward: 150 },
-    { id: 'legend', name: 'Легенда', condition: () => acquiredItems.includes(11), reward: 5000 } // Новое достижение за "Михаил Эйдус" (id: 11)
+    { id: 'legend', name: 'Легенда', condition: () => acquiredItems.includes(11), reward: 5000 }
 ];
 
 const shopItems = [
@@ -154,9 +120,18 @@ const buttonImages = [
 
 function saveGameState() {
     const gameState = {
-        score, level, multiplier, autoTapActive, acquiredItems,
-        acquiredThemes, currentTheme, acquiredButtonImages, currentButtonImage,
-        clicks, achieved, playerName
+        score: resetFlag ? 0 : score,
+        level: resetFlag ? 1 : level,
+        multiplier,
+        autoTapActive,
+        acquiredItems: resetFlag ? [] : acquiredItems,
+        acquiredThemes: resetFlag ? ['default'] : acquiredThemes,
+        currentTheme,
+        acquiredButtonImages: resetFlag ? ['default'] : acquiredButtonImages,
+        currentButtonImage,
+        clicks: resetFlag ? 0 : clicks,
+        achieved: resetFlag ? [] : achieved,
+        playerName
     };
     localStorage.setItem('gameState', JSON.stringify(gameState));
     sendScoreToBot();
@@ -182,9 +157,31 @@ function loadGameState() {
 }
 
 function sendScoreToBot() {
-    const data = { playerName, score, clicks, level };
+    const data = { playerName, score, clicks, level, reset: resetFlag };
     window.Telegram.WebApp.sendData(JSON.stringify(data));
 }
+
+// Обработка сигнала сброса от бота
+window.Telegram.WebApp.onEvent('web_app_data', (event) => {
+    if (event.data) {
+        const receivedData = JSON.parse(event.data);
+        if (receivedData.reset) {
+            resetFlag = true;
+            localStorage.clear();
+            score = 0;
+            clicks = 0;
+            level = 1;
+            acquiredItems = [];
+            acquiredThemes = ['default'];
+            currentTheme = 'default';
+            acquiredButtonImages = ['default'];
+            currentButtonImage = 'default';
+            achieved = [];
+            updateUI();
+            alert('Статистика сброшена админом!');
+        }
+    }
+});
 
 function checkAchievements() {
     achievements.forEach(achievement => {
@@ -305,7 +302,7 @@ function renderShop() {
             if (score >= item.price && !acquiredItems.includes(item.id)) {
                 score -= item.price;
                 acquiredItems.push(item.id);
-                updateUI(); // Проверяем достижение "Легенда" после покупки
+                updateUI();
                 renderShop();
                 renderAcquisitions();
             }
