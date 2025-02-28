@@ -64,6 +64,7 @@ let currentButtonImage = 'default';
 let clicks = 0;
 let achieved = [];
 let playerName = '';
+let resetFlag = false; // Флаг для сброса
 
 // Telegram Web App интеграция
 window.Telegram.WebApp.ready();
@@ -118,40 +119,66 @@ const buttonImages = [
 ];
 
 function saveGameState() {
-    sendScoreToBot(); // Сохраняем только на сервере
+    const gameState = {
+        score: resetFlag ? 0 : score,
+        level: resetFlag ? 1 : level,
+        multiplier,
+        autoTapActive,
+        acquiredItems: resetFlag ? [] : acquiredItems,
+        acquiredThemes: resetFlag ? ['default'] : acquiredThemes,
+        currentTheme,
+        acquiredButtonImages: resetFlag ? ['default'] : acquiredButtonImages,
+        currentButtonImage,
+        clicks: resetFlag ? 0 : clicks,
+        achieved: resetFlag ? [] : achieved,
+        playerName
+    };
+    localStorage.setItem('gameState', JSON.stringify(gameState));
+    sendScoreToBot();
+}
+
+function loadGameState() {
+    const savedState = localStorage.getItem('gameState');
+    if (savedState) {
+        const gameState = JSON.parse(savedState);
+        score = gameState.score || 0;
+        level = gameState.level || 1;
+        multiplier = gameState.multiplier || 1;
+        autoTapActive = gameState.autoTapActive || false;
+        acquiredItems = gameState.acquiredItems || [];
+        acquiredThemes = gameState.acquiredThemes || ['default'];
+        currentTheme = gameState.currentTheme || 'default';
+        acquiredButtonImages = gameState.acquiredButtonImages || ['default'];
+        currentButtonImage = gameState.currentButtonImage || 'default';
+        clicks = gameState.clicks || 0;
+        achieved = gameState.achieved || [];
+        playerName = gameState.playerName || playerName;
+    }
 }
 
 function sendScoreToBot() {
-    const data = { playerName, score, clicks, level, acquiredItems, achieved };
+    const data = { playerName, score, clicks, level, reset: resetFlag };
     window.Telegram.WebApp.sendData(JSON.stringify(data));
 }
 
-// Получение данных от бота (например, после сброса)
+// Обработка сигнала сброса от бота
 window.Telegram.WebApp.onEvent('web_app_data', (event) => {
     if (event.data) {
         const receivedData = JSON.parse(event.data);
         if (receivedData.reset) {
+            resetFlag = true;
+            localStorage.clear();
             score = 0;
             clicks = 0;
             level = 1;
             acquiredItems = [];
-            achieved = [];
-            multiplier = 1;
-            autoTapActive = false;
             acquiredThemes = ['default'];
             currentTheme = 'default';
             acquiredButtonImages = ['default'];
             currentButtonImage = 'default';
+            achieved = [];
             updateUI();
             alert('Статистика сброшена админом!');
-        } else if (receivedData.playerName === playerName) {
-            // Загружаем прогресс от бота при старте
-            score = receivedData.score || 0;
-            clicks = receivedData.clicks || 0;
-            level = receivedData.level || 1;
-            acquiredItems = receivedData.acquiredItems || [];
-            achieved = receivedData.achieved || [];
-            updateUI();
         }
     }
 });
@@ -225,7 +252,7 @@ function updateUI() {
     let progress = (score % 100) / 100 * 100;
     levelBar.style.width = `${progress}%`;
 
-    saveGameState(); // Отправляем данные боту
+    saveGameState();
     checkAchievements();
 }
 
@@ -487,6 +514,15 @@ window.addEventListener('click', (event) => {
 gameButton.addEventListener('click', handleTap);
 
 // Инициализация
+loadGameState();
 updateUI();
 applyTheme(currentTheme);
 applyButtonImage(currentButtonImage);
+
+if (autoTapActive) {
+    setInterval(() => {
+        score += 1 * multiplier;
+        if (score >= level * 100) level++;
+        updateUI();
+    }, 1000);
+}
