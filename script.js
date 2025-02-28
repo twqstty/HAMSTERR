@@ -1,3 +1,37 @@
+let resetFlag = false; // Глобальный флаг сброса
+
+function saveGameState() {
+    const gameState = {
+        score: resetFlag ? 0 : score, // Сбрасываем, если флаг активен
+        level: resetFlag ? 1 : level,
+        multiplier, autoTapActive, acquiredItems,
+        acquiredThemes, currentTheme, acquiredButtonImages, currentButtonImage,
+        clicks: resetFlag ? 0 : clicks,
+        achieved: resetFlag ? [] : achieved,
+        playerName
+    };
+    localStorage.setItem('gameState', JSON.stringify(gameState));
+    sendScoreToBot();
+}
+
+function sendScoreToBot() {
+    const data = { playerName, score, clicks, level, reset: resetFlag };
+    window.Telegram.WebApp.sendData(JSON.stringify(data));
+}
+
+// Добавим обработку ответа от бота
+window.Telegram.WebApp.onEvent('web_app_data', (event) => {
+    if (event.data && event.data.reset) {
+        resetFlag = true; // Получаем сигнал сброса
+        localStorage.clear(); // Очищаем localStorage
+        score = 0;
+        clicks = 0;
+        level = 1;
+        achieved = [];
+        updateUI();
+        alert('Статистика сброшена админом!');
+    }
+});
 const gameButton = document.getElementById('gameButton');
 const buttonImage = document.getElementById('buttonImage');
 const scoreDisplay = document.getElementById('score');
