@@ -63,12 +63,28 @@ let acquiredButtonImages = ['default'];
 let currentButtonImage = 'default';
 let clicks = 0;
 let achieved = [];
+let playerName = '';
+
+// Telegram Web App интеграция
+window.Telegram.WebApp.ready();
+const user = window.Telegram.WebApp.initDataUnsafe.user;
+const adminId = '857785777'; // Замени на свой Telegram ID (узнай через @userinfobot)
+
+// Запрос ника
+if (user && user.username) {
+    playerName = user.username; // Берём ник из Telegram
+} else if (user) {
+    playerName = user.first_name; // Или имя, если нет ника
+} else {
+    playerName = prompt('Введи свой ник, братан:') || 'Аноним'; // Ручной ввод, если не в Telegram
+}
 
 const achievements = [
     { id: 'clicks100', name: '100 кликов', condition: () => clicks >= 100, reward: 50 },
     { id: 'level5', name: '5 уровней', condition: () => level >= 5, reward: 100 },
     { id: 'score1000', name: '1000 очков', condition: () => score >= 1000, reward: 200 },
-    { id: 'buy3items', name: '3 покупки', condition: () => acquiredItems.length >= 3, reward: 150 }
+    { id: 'buy3items', name: '3 покупки', condition: () => acquiredItems.length >= 3, reward: 150 },
+    { id: 'legend', name: 'Легенда', condition: () => acquiredItems.includes(11), reward: 5000 } // Новое достижение за "Михаил Эйдус" (id: 11)
 ];
 
 const shopItems = [
@@ -104,19 +120,12 @@ const buttonImages = [
 
 function saveGameState() {
     const gameState = {
-        score: score,
-        level: level,
-        multiplier: multiplier,
-        autoTapActive: autoTapActive,
-        acquiredItems: acquiredItems,
-        acquiredThemes: acquiredThemes,
-        currentTheme: currentTheme,
-        acquiredButtonImages: acquiredButtonImages,
-        currentButtonImage: currentButtonImage,
-        clicks: clicks,
-        achieved: achieved
+        score, level, multiplier, autoTapActive, acquiredItems,
+        acquiredThemes, currentTheme, acquiredButtonImages, currentButtonImage,
+        clicks, achieved, playerName
     };
     localStorage.setItem('gameState', JSON.stringify(gameState));
+    sendScoreToBot();
 }
 
 function loadGameState() {
@@ -134,7 +143,13 @@ function loadGameState() {
         currentButtonImage = gameState.currentButtonImage || 'default';
         clicks = gameState.clicks || 0;
         achieved = gameState.achieved || [];
+        playerName = gameState.playerName || playerName;
     }
+}
+
+function sendScoreToBot() {
+    const data = { playerName, score, clicks, level };
+    window.Telegram.WebApp.sendData(JSON.stringify(data));
 }
 
 function checkAchievements() {
@@ -218,7 +233,6 @@ function applyTheme(themeId) {
         document.body.style.backgroundSize = 'cover';
         document.body.style.backgroundRepeat = 'no-repeat';
         document.body.style.backgroundPosition = 'center';
-        // Меняем цвет только для #ui (очки, уровень, клики)
         document.getElementById('ui').style.color = theme.textColor;
     }
 }
@@ -257,7 +271,7 @@ function renderShop() {
             if (score >= item.price && !acquiredItems.includes(item.id)) {
                 score -= item.price;
                 acquiredItems.push(item.id);
-                updateUI();
+                updateUI(); // Проверяем достижение "Легенда" после покупки
                 renderShop();
                 renderAcquisitions();
             }
