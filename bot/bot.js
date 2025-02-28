@@ -26,7 +26,7 @@ bot.on('message', (msg) => {
 bot.onText(/\/start/, (msg) => {
     bot.sendMessage(msg.chat.id, 'Жми "Играть" и погнали!', {
         reply_markup: {
-            keyboard: [[{ text: 'Играть', web_app: { url: '' } }]],
+            keyboard: [[{ text: 'Играть', web_app: { url: 'https://twqstty.github.io/HAMSTERR/' } }]],
             resize_keyboard: true
         }
     });
